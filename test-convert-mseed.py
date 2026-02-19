@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from obspy.signal.filter import bandpass
 from scipy.integrate import cumulative_trapezoid
 import numpy as np
-from eruption_forecast.utils import detect_outliers
+from eruption_forecast.utils import detect_maximum_outlier
 from multiprocessing import Pool
 
 # %%
@@ -235,9 +235,10 @@ def get_data_for_day(
     outliers = []
     outlier_indices = []
     for window_index in range(total_windows):
-        outlier, outlier_index, _ = detect_outliers(
+        outlier, outlier_index, _ = detect_maximum_outlier(
             all_data[2][
-                window_index * ten_minutes_samples : (window_index + 1)
+                window_index
+                * ten_minutes_samples : (window_index + 1)
                 * ten_minutes_samples
             ]
         )
@@ -259,7 +260,8 @@ def get_data_for_day(
             range(total_windows), outliers, outlier_indices
         ):
             _rsam = _all_data[
-                window_index * ten_minutes_samples : (window_index + 1)
+                window_index
+                * ten_minutes_samples : (window_index + 1)
                 * ten_minutes_samples
             ]
             rsam.append(np.mean(_rsam))
@@ -285,11 +287,13 @@ def get_data_for_day(
             range(total_windows), outliers, outlier_indices
         ):
             first_domain = all_displacement[ratio_index][
-                window_index * ten_minutes_samples : (window_index + 1)
+                window_index
+                * ten_minutes_samples : (window_index + 1)
                 * ten_minutes_samples
             ]
             second_domain = all_displacement[ratio_index + 1][
-                window_index * ten_minutes_samples : (window_index + 1)
+                window_index
+                * ten_minutes_samples : (window_index + 1)
                 * ten_minutes_samples
             ]
 
